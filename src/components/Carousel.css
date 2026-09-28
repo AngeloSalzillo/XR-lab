@@ -1,0 +1,91 @@
+.carousel {
+
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.items-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    z-index: 0;
+}
+
+.items-viewer{
+
+    position: relative;
+    width: 70%;
+    aspect-ratio: 16 / 9;
+    z-index: 1;
+}
+
+.items-viewer iframe{
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+
+/* BUTTONS */
+
+.left-arrow-button,.right-arrow-button {
+    border: none;
+    background: transparent;
+    color: silver;
+    width: 3rem;
+    height: 3rem;
+    cursor: pointer;
+    transition: transform 0.3s ease, color 0.1s ease;
+}
+
+.left-arrow-button {
+    rotate: 180deg;
+}
+
+.left-arrow-button svg,
+.right-arrow-button svg {
+    width: 100%;
+    height: 100%;
+}
+
+.left-arrow-button:hover, 
+.right-arrow-button:hover {
+    transform: scale(1.2);
+    color: white;
+}
+
+.index-point-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    gap: 10px;
+}
+
+.index-point {
+    width: 5px;
+    height: 5px;
+    background-color: rgb(122, 122, 122);
+    border-radius: 50%;
+}
+
+.active-index-point {
+
+    position: absolute;
+    left: 0;
+    width: 8px;
+    height: 8px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.5s ease;
+}
+
+
