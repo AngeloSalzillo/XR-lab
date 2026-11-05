@@ -1,7 +1,3 @@
-/* =========================================
-   ENTIRE ABOUT + TOOLS + CONTACTS REGION
-   ========================================= */
-
 #about-scroll-area {
 
     position: relative;
@@ -21,6 +17,7 @@
 
     position: sticky;
     top: 0;
+    left: 0;
     width: 100%;
     height: 100vh;
     z-index: 0;
@@ -49,11 +46,11 @@
     padding: 3% 1%;
     margin-bottom: 10rem;
     box-sizing: border-box;
-    text-align: left;
     color: white;
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: center;
     gap: 10vw;
     overflow: visible;
     isolation: isolate;
@@ -99,9 +96,9 @@
     width: 100%;
     display: flex;
     flex-direction: row;
-    align-items: end;
-    justify-content: left;
-    gap: 10vw;
+    align-items: center;
+    justify-content: center;
+    gap: 15vw;
 }
 
 
@@ -111,8 +108,7 @@
 
 #about-text {
 
-    width: 40%;
-    margin: 3rem;
+    width: 35%;
     text-align: justify;
     font-size: 1.5rem;
     z-index: 1;
@@ -133,19 +129,18 @@
     margin-bottom: 0;
 }
 
+#about-text p {
 
-#about p {
-
-    font-size: 1.5rem;
-    line-height: 1.5;
-    margin-bottom: 20px;
+    font-size: 2rem;
+    line-height: 3rem;
+    padding-top: 2rem;
     text-align: justify;
 }
 
+#about-text p span {
 
-#about p span {
-
-    font-size: 3rem;
+    font-size: 4rem;
+    line-height: 0;
 }
 
 
@@ -176,4 +171,46 @@
 #about-slideshow.visible {
 
     opacity: 1;
+}
+
+/* Mobile: text above slideshow */
+@media (max-width: 768px) {
+
+    #about {
+        height: auto;
+        min-height: 100vh;
+        padding: 100px 5% 100px;
+        margin-bottom: 0;
+    }
+
+    #about-content {
+        flex-direction: column;
+        gap: 40px;
+    }
+
+    #about-text {
+        width: 100%;
+    }
+
+    #about div h1 {
+        font-size: 2.5rem;
+    }
+
+    #about-text p {
+        font-size: 1.5rem;
+        line-height: 1.8rem;
+    }
+
+    #about-text p span {
+        font-size: 2rem;
+    }
+
+    .slide h2 {
+        font-size: 1.8rem;
+        display: none;
+    }
+
+    #about-slideshow {
+        display: none;
+    }
 }

@@ -1,0 +1,57 @@
+.scroll-reveal-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.scroll-reveal-text span {
+    opacity: 0;
+    color: white;
+    transform: translateY(20px);
+    font-size: 2rem;
+    text-align: justify;
+    text-align-last: justify;
+    margin: 1rem 0;
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    letter-spacing: 0.5rem;
+    margin: 2rem 0;
+}
+
+.scroll-reveal-text span.visible {
+    opacity: 1;
+    transform: translateY(0);
+
+    animation: bloom-flash 1.5s ease-out forwards;
+}
+
+
+@keyframes bloom-flash {
+
+    0% {
+        text-shadow:
+            0 0 8px rgba(255, 255, 255, 1),
+            0 0 30px rgba(255, 255, 255, 1),
+            0 0 80px rgba(180, 210, 255, 1);
+    }
+
+    40% {
+        text-shadow:
+            0 0 6px rgba(255, 255, 255, 1),
+            0 0 20px rgba(255, 255, 255, 0.9),
+            0 0 60px rgba(180, 210, 255, 0.8);
+    }
+
+    100% {
+        text-shadow:
+            0 0 2px rgba(255, 255, 255, 0.3),
+            0 0 8px rgba(255, 255, 255, 0.2),
+            0 0 20px rgba(180, 210, 255, 0.15);
+    }
+}
+
+@media (max-width: 768px) {
+
+    .scroll-reveal-text span {
+        font-size: 1.5rem;
+        letter-spacing: 0.3rem;
+    }
+}

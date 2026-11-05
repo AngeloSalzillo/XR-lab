@@ -1,0 +1,90 @@
+.depth-reveal-section {
+    width: 100%;
+    height: 100dvh;
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+    perspective: 1000px;
+    perspective-origin: 50% 50%;
+}
+
+.depth-reveal-scene {
+    width: min(90%, 1100px);
+    transform-style: preserve-3d;
+}
+
+.depth-reveal-text {
+    display: flex;
+    flex-direction: column;
+
+    margin: 0;
+    transform-style: preserve-3d;
+}
+
+.depth-reveal-text span {
+    display: block;
+
+    color: white;
+    opacity: 0;
+
+    text-align: justify;
+    text-align-last: justify;
+
+    font-size: clamp(1.2rem, 2.5vw, 2rem);
+    letter-spacing: clamp(0.15rem, 0.5vw, 0.5rem);
+
+    margin: 1rem 0;
+
+    transform:
+        translate3d(0, 0, -800px)
+        scale(0.25);
+
+    filter: blur(8px);
+
+    transform-origin: center center;
+
+    transition:
+        transform 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+        opacity 1s ease,
+        filter 1.2s ease;
+}
+
+.depth-reveal-text span.visible {
+    opacity: 1;
+
+    transform:
+        translate3d(0, 0, 0)
+        scale(1);
+
+    filter: blur(0);
+
+    animation: depth-bloom-flash 1.5s ease-out forwards;
+}
+
+@keyframes depth-bloom-flash {
+
+    0% {
+        text-shadow:
+            0 0 8px rgba(255, 255, 255, 1),
+            0 0 30px rgba(255, 255, 255, 1),
+            0 0 80px rgba(180, 210, 255, 1);
+    }
+
+    40% {
+        text-shadow:
+            0 0 6px rgba(255, 255, 255, 1),
+            0 0 20px rgba(255, 255, 255, 0.9),
+            0 0 60px rgba(180, 210, 255, 0.8);
+    }
+
+    100% {
+        text-shadow:
+            0 0 2px rgba(255, 255, 255, 0.3),
+            0 0 8px rgba(255, 255, 255, 0.2),
+            0 0 20px rgba(180, 210, 255, 0.15);
+    }
+}

@@ -6,6 +6,7 @@ import linkedinIcon from '../../assets/InBug-White.png';
 import githubIcon from '../../assets/GitHub_Invertocat_White.svg';
 import sketchfabIcon from '../../assets/sketchfab-logo-white.svg';
 import NavigationBar from'../components/NavigationBar.jsx';
+import ContactForm from '../components/ContactForm.jsx';
 import './Footer.css';
 import '../components/FooterNavigationBar.css';
 

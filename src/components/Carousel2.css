@@ -1,0 +1,199 @@
+.carousel2 {
+
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+#carousel2-overlay {
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        to bottom,
+        black 0%,
+        transparent 20%,
+        transparent 80%,
+        black 100%
+    );
+    z-index: 1;
+    pointer-events: none;
+}
+
+.items-sequence-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    background-color: black;
+    overflow: visible;
+}
+
+.items-sequence {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    width: 200%;
+    flex-shrink: 0;
+    overflow: visible;
+
+    transform: translateX(0%);
+}
+
+.img-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.img-container img {
+    transition: filter 0.3s ease, brightness 0.6s ease;
+}
+
+.img-container:hover img {
+    filter: brightness(0.6);
+}
+
+/* =========================
+   SKETCHFAB IFRAME
+   ========================= */
+
+#item-iframe {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+    transition:
+        transform 0.8s ease,
+        opacity 0.8s ease;
+    transform-origin: center center;
+    z-index: 2;
+}
+
+#item-iframe.visible {
+    
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+}
+
+
+/* =========================
+   BUTTONS
+   ========================= */
+
+.left-arrow-button,
+.right-arrow-button {
+
+    border: none;
+    background: transparent;
+
+    color: silver;
+
+    width: 3rem;
+    height: 3rem;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.3s ease,
+        color 0.1s ease;
+
+    z-index: 2;
+}
+
+.left-arrow-button {
+    rotate: 180deg;
+}
+
+.left-arrow-button svg,
+.right-arrow-button svg {
+
+    width: 100%;
+    height: 100%;
+}
+
+.left-arrow-button:hover,
+.right-arrow-button:hover {
+
+    transform: scale(1.2);
+    color: white;
+}
+
+.close-iframe-button {
+
+    display: none;
+    opacity: 0;
+    position: fixed;
+    top: 3rem;
+    right: 50%;
+    border: none;
+    background: transparent;
+    color: silver;
+    width: 2rem;
+    height: 2rem;
+    transform: translateX(50%) scale(2);
+    cursor: pointer;
+    transition:
+        transform 0.3s ease,
+        color 0.1s ease,
+        opacity 0.2s ease;
+    z-index: 3;
+}
+
+.close-iframe-button.visible {
+
+    display: block;
+    opacity: 1;
+}
+
+.close-iframe-button.visible:hover {
+
+    transform: translateX(50%) scale(2.2);
+    color: white;
+}
+
+/* Hide the play button by default */
+.img-container svg {
+    position: absolute;
+    color: silver;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+/* Show the play button when hovering over the image */
+.img-container:hover svg {
+    opacity: 1;
+}
+
+@media (max-width: 768px) {
+
+    .items-sequence {
+        width: 500%;
+    }
+
+    .img-container svg{
+        opacity: 1;
+    }
+
+    #item-iframe {
+        /* Mobile: portrait */
+        width: 90vw;
+        height: 70vh;
+    }
+}

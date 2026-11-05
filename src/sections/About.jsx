@@ -57,15 +57,15 @@ export default function About() {
                             XR LAB
                         </span>
 
-                        is a collection of projects and creative
+
+                        <strong>{' '}is a collection of projects and creative
                         explorations, experimenting the intersection
                         of software engineering, immersive technologies
                         and digital art. Every project is driven by
                         curiosity and built around the idea that code
                         can be used as a creative tool. XR LAB is where
                         engineering meets creativity to transform ideas
-                        into interactive experiences.
-
+                        into interactive experiences. </strong>
                     </p>
 
                 </div>
@@ -85,7 +85,8 @@ export default function About() {
                             <strong>
                                 Transforming sound into visual experiences
                             </strong>
-                            <br />
+                            <br/>
+                            <br/>
 
                             Real-time visual systems driven by rhythm,
                             frequency, and amplitude, turning audio into
@@ -106,6 +107,7 @@ export default function About() {
                             <strong>
                                 Capturing and visualizing the physical world
                             </strong>
+                            <br />
                             <br />
 
                             3D scanning techniques used to transform
@@ -129,6 +131,7 @@ export default function About() {
                                 Building immersive digital worlds
                             </strong>
                             <br />
+                            <br />
 
                             Interactive environments combining 3D assets,
                             lighting, materials, and spatial design.
@@ -147,6 +150,7 @@ export default function About() {
                             <strong>
                                 Bringing digital experiences to life
                             </strong>
+                            <br />
                             <br />
 
                             Movement, transformation, and procedural

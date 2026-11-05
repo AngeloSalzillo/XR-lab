@@ -1,0 +1,207 @@
+
+/* =========================
+   CONTACT FORM
+   ========================= */
+
+#contact-form {
+
+    width: min(85%, 900px);
+    margin: 0 auto;
+    padding: 5rem 0;
+
+    color: white;
+
+    font-family: "Smooch Sans", sans-serif;
+}
+
+
+/* =========================
+   HEADING
+   ========================= */
+
+.contact-form-heading {
+
+    margin-bottom: 3rem;
+}
+
+.contact-form-heading h2 {
+
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    margin: 0 0 1.5rem;
+}
+
+.contact-form-line {
+
+    width: 100%;
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+.contact-form-heading p {
+
+    font-size: 1.5rem;
+    line-height: 1.4;
+    margin-top: 1.5rem;
+    opacity: 0.8;
+}
+
+
+/* =========================
+   FORM LAYOUT
+   ========================= */
+
+#contact-form form {
+
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.contact-form-row {
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.contact-form-field {
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.contact-form-field label {
+
+    font-size: 1.3rem;
+    letter-spacing: 0.04em;
+}
+
+
+/* =========================
+   INPUTS
+   ========================= */
+
+.contact-form-field input,
+.contact-form-field textarea {
+
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 1rem 1.1rem;
+
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 0;
+
+    color: white;
+
+    font-family: "Smooch Sans", sans-serif;
+    font-size: 1.3rem;
+
+    outline: none;
+
+    transition:
+        border-color 0.3s ease,
+        background-color 0.3s ease;
+}
+
+.contact-form-field textarea {
+
+    resize: vertical;
+    min-height: 160px;
+}
+
+.contact-form-field input::placeholder,
+.contact-form-field textarea::placeholder {
+
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.contact-form-field input:focus,
+.contact-form-field textarea:focus {
+
+    border-color: white;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+
+/* =========================
+   SUBMIT BUTTON
+   ========================= */
+
+.contact-form-submit {
+
+    align-self: flex-start;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+
+    padding: 0.9rem 1.5rem;
+
+    background: transparent;
+    border: 1px solid white;
+
+    color: white;
+
+    font-family: "Bytesized", sans-serif;
+    font-size: 0.9rem;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease,
+        gap 0.3s ease;
+}
+
+.contact-form-submit svg {
+
+    width: 1.4rem;
+    height: 1.4rem;
+}
+
+.contact-form-submit:hover {
+
+    background-color: white;
+    color: black;
+    gap: 1.5rem;
+}
+
+.contact-form-submit:focus-visible {
+
+    outline: 2px solid white;
+    outline-offset: 5px;
+}
+
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+@media (max-width: 650px) {
+
+    #contact-form {
+
+        width: 90%;
+        padding: 3rem 0;
+    }
+
+    .contact-form-row {
+
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .contact-form-heading p {
+
+        font-size: 1.3rem;
+    }
+
+    .contact-form-submit {
+
+        width: 100%;
+    }
+}

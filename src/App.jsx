@@ -6,6 +6,7 @@ import Tools from './sections/Tools.jsx';
 import Discover from './sections/Discover.jsx';
 import Footer from './sections/Footer.jsx';
 import './components/NavigationBar.css';
+import ScrollToTop from './components/ScrollToTop.jsx';
 
 import videoBackground from '../assets/about_background.mp4';
 
