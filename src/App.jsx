@@ -19,6 +19,11 @@ export default function App() {
     <>
       <NavigationBar type="navbar"/>
 
+      {/* Resets the scroll position to the top on every route change.
+          It must be rendered before <Routes> so it runs before the
+          pages (and ScrollRevealText) mount their effects. */}
+      <ScrollToTop />
+
       <Routes>
 
         <Route

@@ -20,7 +20,7 @@ export default function About() {
             },
 
             {
-                threshold: 0.9
+                threshold: 0.55
             }
         );
 
