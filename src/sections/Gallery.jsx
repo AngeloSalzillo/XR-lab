@@ -1,10 +1,9 @@
 import './Gallery.css';
-import videoBackground from '../../assets/gallery_background8.mp4'
+import videoBackground_H264 from '../../assets/gallery_background_H264.mp4'
+import videoBackground_H265 from '../../assets/gallery_background_H265.mp4'
 import Carousel2 from '../components/Carousel2.jsx';
-import Acordion from '../components/Acordion.jsx';
 import ScrollRevealText from '../components/ScrollRevealText.jsx';
 import ThreeDCarousel from '../components/ThreeDCarousel.jsx';
-import DepthRevealText from '../components/DepthRevealText.jsx';
 import Footer from './Footer.jsx';
 import { useEffect, useRef, useState } from 'react';
 
@@ -167,7 +166,8 @@ export default function Gallery() {
 
             <div id="gallery-background">
                 <video autoPlay muted loop playsInline>
-                    <source src={videoBackground} type="video/mp4"/>
+                    <source src={videoBackground_H265} type='video/mp4; codecs="hvc1"'/>
+                    <source src={videoBackground_H264} type='video/mp4'/>
                 </video>
             </div>
 

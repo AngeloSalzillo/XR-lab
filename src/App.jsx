@@ -8,7 +8,8 @@ import Footer from './sections/Footer.jsx';
 import './components/NavigationBar.css';
 import ScrollToTop from './components/ScrollToTop.jsx';
 
-import videoBackground from '../assets/about_background.mp4';
+import videoBackground_H264 from '../assets/about_background_H264.mp4';
+import videoBackground_H265 from '../assets/about_background_H265.mp4';
 
 import { Routes, Route } from 'react-router-dom';
 
@@ -37,10 +38,8 @@ export default function App() {
                 <div id="sticky-background">
 
                   <video autoPlay muted loop playsInline>
-                    <source
-                      src={videoBackground}
-                      type="video/mp4"
-                    />
+                    <source src={videoBackground_H265} type='video/mp4; codecs="hvc1"'/>
+                    <source src={videoBackground_H264} type='video/mp4'/>
                   </video>
 
                 </div>
