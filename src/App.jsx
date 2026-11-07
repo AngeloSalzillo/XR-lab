@@ -1,3 +1,4 @@
+import './components/NavigationBar.css';
 import NavigationBar from './components/NavigationBar.jsx';
 import Hero from './sections/Hero.jsx';
 import About from './sections/About.jsx';
@@ -5,11 +6,12 @@ import Gallery from './sections/Gallery.jsx';
 import Tools from './sections/Tools.jsx';
 import Discover from './sections/Discover.jsx';
 import Footer from './sections/Footer.jsx';
-import './components/NavigationBar.css';
 import ScrollToTop from './components/ScrollToTop.jsx';
-
+import BackgroundVideo from './components/BackgroundVideo.jsx';
 import videoBackground_H264 from '../assets/about_background_H264.mp4';
 import videoBackground_H265 from '../assets/about_background_H265.mp4';
+import videoBackground_mobile_H264 from '../assets/about_background_mobile_H264.mp4';
+import videoBackground_mobile_H265 from '../assets/about_background_mobile_H265.mp4';
 
 import { Routes, Route } from 'react-router-dom';
 
@@ -37,10 +39,19 @@ export default function App() {
 
                 <div id="sticky-background">
 
-                  <video autoPlay muted loop playsInline>
-                    <source src={videoBackground_H265} type='video/mp4; codecs="hvc1"'/>
-                    <source src={videoBackground_H264} type='video/mp4'/>
-                  </video>
+                  <BackgroundVideo className="desktop-background"
+                    sources={[
+                      { src: videoBackground_H265, type: 'video/mp4; codecs="hvc1"' },
+                      { src: videoBackground_H264, type: 'video/mp4' }
+                    ]}
+                  />
+                  <BackgroundVideo className="mobile-background"
+                    sources={[
+                      { src: videoBackground_mobile_H265, type: 'video/mp4; codecs="hvc1"' },
+                      { src: videoBackground_mobile_H264, type: 'video/mp4' }
+                    ]}
+                  />
+
 
                 </div>
 

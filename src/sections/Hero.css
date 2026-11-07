@@ -16,6 +16,14 @@ header {
     z-index: -1;
 }
 
+#home-background video {
+
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
 #home-overlay {
     position: absolute;
     top: 0;

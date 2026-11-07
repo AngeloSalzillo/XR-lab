@@ -1,6 +1,9 @@
 import './Gallery.css';
-import videoBackground_H264 from '../../assets/gallery_background_H264.mp4'
-import videoBackground_H265 from '../../assets/gallery_background_H265.mp4'
+import videoBackground_desktop_H264 from '../../assets/gallery_background_H264.mp4'
+import videoBackground_desktop_H265 from '../../assets/gallery_background_H265.mp4'
+import videoBackground_mobile_H264 from '../../assets/gallery_background_mobile_H264.mp4'
+import videoBackground_mobile_H265 from '../../assets/gallery_background_mobile_H265.mp4'
+import BackgroundVideo from '../components/BackgroundVideo.jsx';
 import Carousel2 from '../components/Carousel2.jsx';
 import ScrollRevealText from '../components/ScrollRevealText.jsx';
 import ThreeDCarousel from '../components/ThreeDCarousel.jsx';
@@ -165,10 +168,18 @@ export default function Gallery() {
         >
 
             <div id="gallery-background">
-                <video autoPlay muted loop playsInline>
-                    <source src={videoBackground_H265} type='video/mp4; codecs="hvc1"'/>
-                    <source src={videoBackground_H264} type='video/mp4'/>
-                </video>
+                <BackgroundVideo className="mobile-background"
+                    sources={[
+                        { src: videoBackground_mobile_H265, type: 'video/mp4; codecs="hvc1"' },
+                        { src: videoBackground_mobile_H264, type: 'video/mp4' }
+                    ]}
+                />
+                <BackgroundVideo className="desktop-background"
+                    sources={[
+                        { src: videoBackground_desktop_H265, type: 'video/mp4; codecs="hvc1"' },
+                        { src: videoBackground_desktop_H264, type: 'video/mp4' }
+                    ]}
+                />
             </div>
 
             <div id="gallery-text" ref={titleRef}>

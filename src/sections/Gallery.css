@@ -22,7 +22,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transform: rotate(180deg);
+    transform: rotate(360deg);
 }
 
 #gallery-text {
@@ -204,6 +204,14 @@
     outline: none;
 }
 
+.mobile-background {
+    display: none !important;
+}
+
+.desktop-background {
+    display: block !important;
+}
+
 @media (max-width: 768px) {
     #gallery-text {
         font-size: 2rem;
@@ -237,6 +245,14 @@
     }
 
     .desktop-only {
+        display: none !important;
+    }
+
+    .mobile-background {
+        display: block !important;
+    }
+
+    .desktop-background {
         display: none !important;
     }
 }

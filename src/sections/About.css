@@ -173,6 +173,14 @@
     opacity: 1;
 }
 
+.mobile-background {
+    display: none !important;
+}
+
+.desktop-background {
+    display: block !important;
+}
+
 /* Mobile: text above slideshow */
 @media (max-width: 768px) {
 
@@ -212,5 +220,13 @@
 
     #about-slideshow {
         display: none;
+    }
+
+    .mobile-background {
+        display: block !important;
+    }
+
+    .desktop-background {
+        display: none !important;
     }
 }
