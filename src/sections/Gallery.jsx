@@ -3,12 +3,71 @@ import videoBackground_desktop_H264 from '../../assets/gallery_background_H264.m
 import videoBackground_desktop_H265 from '../../assets/gallery_background_H265.mp4'
 import videoBackground_mobile_H264 from '../../assets/gallery_background_mobile_H264.mp4'
 import videoBackground_mobile_H265 from '../../assets/gallery_background_mobile_H265.mp4'
+import posterBackground from '../../assets/gallery_poster.jpg'
+import posterBackground_mobile from '../../assets/gallery_mobile_poster.jpg'
 import BackgroundVideo from '../components/BackgroundVideo.jsx';
 import Carousel2 from '../components/Carousel2.jsx';
 import ScrollRevealText from '../components/ScrollRevealText.jsx';
 import ThreeDCarousel from '../components/ThreeDCarousel.jsx';
 import Footer from './Footer.jsx';
 import { useEffect, useRef, useState } from 'react';
+
+
+// ============================================================
+// VIDEO DATA
+// ============================================================
+
+const IFRAME_STYLE = {
+    width: '100%',
+    height: '100%',
+    border: 0,
+    borderRadius: '10px'
+};
+
+const DESKTOP_ALLOW =
+    'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+
+const MOBILE_ALLOW =
+    'accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+
+const DESKTOP_ANIMATIONS = [
+    { id: 'Zj6z9X_MWAk', title: 'Animation video 1' },
+    { id: 'LDGk5J2uM3E', title: 'Animation video 2' },
+    { id: 'Zj6z9X_MWAk', title: 'Animation video 1' },
+    { id: 'LDGk5J2uM3E', title: 'Animation video 2' },
+    { id: 'Zj6z9X_MWAk', title: 'Animation video 1' },
+    { id: 'LDGk5J2uM3E', title: 'Animation video 2' },
+    { id: 'Zj6z9X_MWAk', title: 'Animation video 1' },
+    { id: 'LDGk5J2uM3E', title: 'Animation video 2' },
+];
+
+const MOBILE_ANIMATIONS = [
+    {
+        id: 'kCQ4wjICZmM',
+        title: 'Where’s the bathroom? - Animation clip in Unity #3d #unity #animation #digitalart #techno'
+    },
+    {
+        id: 'nQXsbUHabFQ',
+        title: 'Noise Bloom - Audioreactive Visuals with Touchdesginer #3d #touchdesigner #digitalart #techno #beat'
+    },
+    {
+        id: 'GmKZDNe-AUg',
+        title: 'Digital Memory - Audioreactive Visuals with Touchdesigner  #3d  #touchdesigner #visual #digitalart'
+    },
+    {
+        id: 'kCQ4wjICZmM',
+        title: 'Where’s the bathroom? - Animation clip in Unity #3d #unity #animation #digitalart #techno'
+    },
+    {
+        id: 'nQXsbUHabFQ',
+        title: 'Noise Bloom - Audioreactive Visuals with Touchdesginer #3d #touchdesigner #digitalart #techno #beat'
+    },
+    {
+        id: 'GmKZDNe-AUg',
+        title: 'Digital Memory - Audioreactive Visuals with Touchdesigner  #3d  #touchdesigner #visual #digitalart'
+    },
+];
+
 
 export default function Gallery() {
 
@@ -23,6 +82,31 @@ export default function Gallery() {
 
     // The scroll position at which the accordion was closed.
     const closeScrollY = useRef(null);
+
+
+    // --------------------------------------------------------
+    // MOBILE DETECTION
+    // --------------------------------------------------------
+    // Only the carousel, background video (and its poster) and
+    // environment video that match the screen are rendered. The others
+    // are not even created, so their files and players never load and
+    // the desktop poster can never show on a phone.
+
+    const [isMobile, setIsMobile] = useState(
+        () => window.matchMedia('(max-width: 768px)').matches
+    );
+
+    useEffect(() => {
+
+        const mediaQuery = window.matchMedia('(max-width: 768px)');
+
+        const handleChange = (event) => setIsMobile(event.matches);
+
+        mediaQuery.addEventListener('change', handleChange);
+
+        return () => mediaQuery.removeEventListener('change', handleChange);
+
+    }, []);
 
 
     function handleAccordionToggle(isOpen) {
@@ -168,17 +252,20 @@ export default function Gallery() {
         >
 
             <div id="gallery-background">
-                <BackgroundVideo className="mobile-background"
-                    sources={[
-                        { src: videoBackground_mobile_H265, type: 'video/mp4; codecs="hvc1"' },
-                        { src: videoBackground_mobile_H264, type: 'video/mp4' }
-                    ]}
-                />
-                <BackgroundVideo className="desktop-background"
-                    sources={[
-                        { src: videoBackground_desktop_H265, type: 'video/mp4; codecs="hvc1"' },
-                        { src: videoBackground_desktop_H264, type: 'video/mp4' }
-                    ]}
+                <BackgroundVideo
+                    key={isMobile ? 'mobile' : 'desktop'}
+                    sources={
+                        isMobile
+                            ? [
+                                { src: videoBackground_mobile_H265, type: 'video/mp4; codecs="hvc1"' },
+                                { src: videoBackground_mobile_H264, type: 'video/mp4' }
+                            ]
+                            : [
+                                { src: videoBackground_desktop_H265, type: 'video/mp4; codecs="hvc1"' },
+                                { src: videoBackground_desktop_H264, type: 'video/mp4' }
+                            ]
+                    }
+                    poster={isMobile ? posterBackground_mobile : posterBackground}
                 />
             </div>
 
@@ -222,224 +309,40 @@ export default function Gallery() {
                     />
                     */}
 
-                    <ThreeDCarousel id="desktop-carousel">
-                        <iframe
-                            src="https://www.youtube.com/embed/Zj6z9X_MWAk?modestbranding=1&rel=0"
-                            title="Animation video 1"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            referrerPolicy="strict-origin-when-cross-origin"
-                            allowFullScreen
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                border: 0,
-                                borderRadius: '10px'
-                            }}
-                        />
+                    {isMobile ? (
 
-                        <iframe
-                            src="https://www.youtube.com/embed/LDGk5J2uM3E?modestbranding=1&rel=0"
-                            title="Animation video 2"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            referrerPolicy="strict-origin-when-cross-origin"
-                            allowFullScreen
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                border: 0,
-                                borderRadius: '10px'
-                            }}
-                        />
+                        <ThreeDCarousel id="mobile-carousel">
+                            {MOBILE_ANIMATIONS.map((video, index) => (
+                                <iframe
+                                    key={index}
+                                    src={`https://www.youtube.com/embed/${video.id}`}
+                                    title={video.title}
+                                    frameBorder="0"
+                                    allow={MOBILE_ALLOW}
+                                    referrerPolicy="strict-origin-when-cross-origin"
+                                    allowFullScreen
+                                    style={IFRAME_STYLE}
+                                ></iframe>
+                            ))}
+                        </ThreeDCarousel>
 
-                        <iframe
-                            src="https://www.youtube.com/embed/Zj6z9X_MWAk?modestbranding=1&rel=0"
-                            title="Animation video 1"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            referrerPolicy="strict-origin-when-cross-origin"
-                            allowFullScreen
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                border: 0,
-                                borderRadius: '10px'
-                            }}
-                        />
+                    ) : (
 
-                        <iframe
-                            src="https://www.youtube.com/embed/LDGk5J2uM3E?modestbranding=1&rel=0"
-                            title="Animation video 2"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            referrerPolicy="strict-origin-when-cross-origin"
-                            allowFullScreen
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                border: 0,
-                                borderRadius: '10px'
-                            }}
-                        />
+                        <ThreeDCarousel id="desktop-carousel">
+                            {DESKTOP_ANIMATIONS.map((video, index) => (
+                                <iframe
+                                    key={index}
+                                    src={`https://www.youtube.com/embed/${video.id}?modestbranding=1&rel=0`}
+                                    title={video.title}
+                                    allow={DESKTOP_ALLOW}
+                                    referrerPolicy="strict-origin-when-cross-origin"
+                                    allowFullScreen
+                                    style={IFRAME_STYLE}
+                                />
+                            ))}
+                        </ThreeDCarousel>
 
-                        <iframe
-                            src="https://www.youtube.com/embed/Zj6z9X_MWAk?modestbranding=1&rel=0"
-                            title="Animation video 1"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            referrerPolicy="strict-origin-when-cross-origin"
-                            allowFullScreen
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                border: 0,
-                                borderRadius: '10px'
-                            }}
-                        />
-
-                        <iframe
-                            src="https://www.youtube.com/embed/LDGk5J2uM3E?modestbranding=1&rel=0"
-                            title="Animation video 2"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            referrerPolicy="strict-origin-when-cross-origin"
-                            allowFullScreen
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                border: 0,
-                                borderRadius: '10px'
-                            }}
-                        />
-
-                        <iframe
-                            src="https://www.youtube.com/embed/Zj6z9X_MWAk?modestbranding=1&rel=0"
-                            title="Animation video 1"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            referrerPolicy="strict-origin-when-cross-origin"
-                            allowFullScreen
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                border: 0,
-                                borderRadius: '10px'
-                            }}
-                        />
-
-                        <iframe
-                            src="https://www.youtube.com/embed/LDGk5J2uM3E?modestbranding=1&rel=0"
-                            title="Animation video 2"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            referrerPolicy="strict-origin-when-cross-origin"
-                            allowFullScreen
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                border: 0,
-                                borderRadius: '10px'
-                            }}
-                        />
-                    </ThreeDCarousel>
-
-                    <ThreeDCarousel id="mobile-carousel">
-                        <iframe 
-                            width="412" 
-                            height="732" 
-                            src="https://www.youtube.com/embed/kCQ4wjICZmM" 
-                            title="Where’s the bathroom? - Animation clip in Unity #3d #unity #animation #digitalart #techno" 
-                            frameBorder="0" 
-                            allow="accelerometer; autoPlay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                            referrerPolicy="strict-origin-when-cross-origin" 
-                            allowFullScreen
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                border: 0,
-                                borderRadius: '10px'
-                            }}
-                        ></iframe>
-
-                        <iframe 
-                            width="412" 
-                            height="732" 
-                            src="https://www.youtube.com/embed/nQXsbUHabFQ"
-                            title="Noise Bloom - Audioreactive Visuals with Touchdesginer #3d #touchdesigner #digitalart #techno #beat" 
-                            frameBorder="0" 
-                            allow="accelerometer; autoPlay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                            referrerPolicy="strict-origin-when-cross-origin" 
-                            allowFullScreen
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                border: 0,
-                                borderRadius: '10px'
-                            }}
-                        ></iframe>
-
-                        <iframe 
-                            width="412" 
-                            height="732" 
-                            src="https://www.youtube.com/embed/GmKZDNe-AUg"
-                            title="Digital Memory - Audioreactive Visuals with Touchdesigner  #3d  #touchdesigner #visual #digitalart"
-                            frameBorder="0" 
-                            allow="accelerometer; autoPlay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                            referrerPolicy="strict-origin-when-cross-origin" 
-                            allowFullScreen
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                border: 0,
-                                borderRadius: '10px'
-                            }}
-                        ></iframe>
-
-                        <iframe 
-                            width="412" 
-                            height="732" 
-                            src="https://www.youtube.com/embed/kCQ4wjICZmM" 
-                            title="Where’s the bathroom? - Animation clip in Unity #3d #unity #animation #digitalart #techno" 
-                            frameBorder="0" 
-                            allow="accelerometer; autoPlay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                            referrerPolicy="strict-origin-when-cross-origin" 
-                            allowFullScreen
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                border: 0,
-                                borderRadius: '10px'
-                            }}
-                        ></iframe>
-
-                        <iframe 
-                            width="412" 
-                            height="732" 
-                            src="https://www.youtube.com/embed/nQXsbUHabFQ"
-                            title="Noise Bloom - Audioreactive Visuals with Touchdesginer #3d #touchdesigner #digitalart #techno #beat" 
-                            frameBorder="0" 
-                            allow="accelerometer; autoPlay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                            referrerPolicy="strict-origin-when-cross-origin" 
-                            allowFullScreen
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                border: 0,
-                                borderRadius: '10px'
-                            }}
-                        ></iframe>
-
-                        <iframe 
-                            width="412" 
-                            height="732" 
-                            src="https://www.youtube.com/embed/GmKZDNe-AUg"
-                            title="Digital Memory - Audioreactive Visuals with Touchdesigner  #3d  #touchdesigner #visual #digitalart"
-                            frameBorder="0" 
-                            allow="accelerometer; autoPlay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                            referrerPolicy="strict-origin-when-cross-origin" 
-                            allowFullScreen
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                border: 0,
-                                borderRadius: '10px'
-                            }}
-                        ></iframe>
-
-                    </ThreeDCarousel>
+                    )}
                 </div>
 
                 <div id="gallery-environments-container">
@@ -447,31 +350,37 @@ export default function Gallery() {
                         <h1>Environments</h1>
                     </div>
 
-                    <div id="environments-iframe-container" className="desktop-only">
-                        <iframe 
-                            width="1053" 
-                            height="592" 
-                            src="https://www.youtube.com/embed/EFEiAuZ2IkU" 
-                            title="Environments1" 
-                            frameBorder="0" 
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                            referrerPolicy="strict-origin-when-cross-origin" 
-                            allowFullScreen
-                        ></iframe>
-                    </div>
+                    {isMobile ? (
 
-                    <div id="environments-iframe-container" className="mobile-only">
-                        <iframe 
-                            width="412" 
-                            height="732" 
-                            src="https://www.youtube.com/embed/elm-OhkaQXU"
-                            title="Environments1 vertical" 
-                            frameBorder="0" 
-                            allow="accelerometer; autoPlay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                            referrerPolicy="strict-origin-when-cross-origin" 
-                            allowFullScreen
-                        ></iframe>
-                    </div>
+                        <div id="environments-iframe-container" className="mobile-only">
+                            <iframe 
+                                width="412" 
+                                height="732" 
+                                src="https://www.youtube.com/embed/elm-OhkaQXU"
+                                title="Environments1 vertical" 
+                                frameBorder="0" 
+                                allow={MOBILE_ALLOW}
+                                referrerPolicy="strict-origin-when-cross-origin" 
+                                allowFullScreen
+                            ></iframe>
+                        </div>
+
+                    ) : (
+
+                        <div id="environments-iframe-container" className="desktop-only">
+                            <iframe 
+                                width="1053" 
+                                height="592" 
+                                src="https://www.youtube.com/embed/EFEiAuZ2IkU" 
+                                title="Environments1" 
+                                frameBorder="0" 
+                                allow={DESKTOP_ALLOW}
+                                referrerPolicy="strict-origin-when-cross-origin" 
+                                allowFullScreen
+                            ></iframe>
+                        </div>
+
+                    )}
                 </div>
             </div>
 

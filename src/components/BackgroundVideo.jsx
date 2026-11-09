@@ -1,25 +1,40 @@
-import { useEffect, useRef } from 'react';
+import './BackgroundVideo.css';
+import { useEffect, useRef, useState } from 'react';
 
 /*
- * Background video that keeps playing.
- *
- * Mobile browsers (especially iOS Safari) pause videos when the page goes
- * to the background (app switch, locked screen, tab switch) and do NOT
- * resume them when the user comes back. This component resumes playback
- * in every situation where that can happen.
+ * Background video that:
+ *  - never shows the browser's own play button, even when the browser
+ *    blocks autoplay (iOS Low Power Mode):
+ *      1. CSS hides the native button (BackgroundVideo.css);
+ *      2. if autoplay is blocked, the video is hidden (the native button
+ *         lives inside the <video>, so it disappears with it). If a
+ *         `poster` is given it is shown in its place, otherwise the
+ *         background behind the video shows through;
+ *  - starts on the first tap/click if autoplay was blocked, and one tap
+ *    starts every video on the page;
+ *  - resumes after the page returns from the background (app switch,
+ *    locked screen, tab switch).
  *
  * Usage:
  *   <BackgroundVideo
- *       className="desktop-background"
+ *       className="some-class"      (optional)
+ *       poster={posterImage}        (optional, shown while autoplay is blocked)
  *       sources={[
  *           { src: videoH265, type: 'video/mp4; codecs="hvc1"' },
  *           { src: videoH264, type: 'video/mp4' },
  *       ]}
  *   />
+ *
+ * The element that contains this component must be positioned
+ * (position: relative / absolute / sticky), as your background
+ * containers already are, so the poster can fill it.
  */
-export default function BackgroundVideo({ sources, className }) {
+export default function BackgroundVideo({ sources, className, poster }) {
 
     const videoRef = useRef(null);
+
+    // True when the browser refused to autoplay the video.
+    const [autoplayBlocked, setAutoplayBlocked] = useState(false);
 
     useEffect(() => {
 
@@ -27,80 +42,103 @@ export default function BackgroundVideo({ sources, className }) {
 
         if (!video) return;
 
-        const tryPlay = () => {
+        // React sets `muted` as a property but does not write the HTML
+        // attribute. Set both explicitly.
+        video.defaultMuted = true;
+        video.muted = true;
 
-            if (document.hidden || video.ended) return;
+        // One play() attempt tells us whether autoplay is allowed. If the
+        // browser blocks it (Low Power Mode), the promise rejects at once.
+        const firstAttempt = video.play();
+
+        if (firstAttempt && typeof firstAttempt.catch === 'function') {
+            firstAttempt.catch((error) => {
+                if (error && error.name === 'NotAllowedError') {
+                    setAutoplayBlocked(true);
+                }
+            });
+        }
+
+        const resume = () => {
+
+            if (document.hidden || video.ended || !video.paused) return;
 
             const result = video.play();
 
-            // play() returns a promise that can reject (autoplay blocked,
-            // Low Power Mode...). Nothing to do in that case: the
-            // interaction listeners below will retry on the next touch.
             if (result && typeof result.catch === 'function') {
                 result.catch(() => { });
             }
         };
 
-        // Page becomes visible again (app switch, tab switch, unlock).
+        // The user comes back to the page (app switch, tab switch, unlock).
         const handleVisibilityChange = () => {
-            if (!document.hidden) tryPlay();
+            if (!document.hidden) resume();
         };
 
-        // Page restored from the back/forward cache.
-        const handlePageShow = () => {
-            tryPlay();
+        // Page restored from the back/forward cache (not a normal load).
+        const handlePageShow = (event) => {
+            if (event.persisted) resume();
         };
 
-        // The browser paused the video on its own while the page is
-        // visible (iOS does this in several situations). Resume it.
-        const handlePause = () => {
-            if (!document.hidden && !video.ended) {
-                tryPlay();
-            }
-        };
-
-        // Fallback: if autoplay was blocked (for example iOS Low Power
-        // Mode), start the video on the first touch or click.
-        const handleFirstInteraction = () => {
-            if (video.paused) tryPlay();
+        // Autoplay blocked: a tap (a real user gesture) is allowed to start
+        // playback. Every BackgroundVideo on the page listens, so a single
+        // tap starts all of them. Scrolling alone does not count as a
+        // gesture for the browser, so a tap or click is needed.
+        const handleUserGesture = () => {
+            resume();
         };
 
         document.addEventListener('visibilitychange', handleVisibilityChange);
         window.addEventListener('pageshow', handlePageShow);
-        window.addEventListener('focus', handlePageShow);
-        video.addEventListener('pause', handlePause);
-
-        window.addEventListener('touchstart', handleFirstInteraction, { passive: true });
-        window.addEventListener('click', handleFirstInteraction);
+        window.addEventListener('touchend', handleUserGesture, { passive: true });
+        window.addEventListener('click', handleUserGesture);
 
         return () => {
             document.removeEventListener('visibilitychange', handleVisibilityChange);
             window.removeEventListener('pageshow', handlePageShow);
-            window.removeEventListener('focus', handlePageShow);
-            video.removeEventListener('pause', handlePause);
-
-            window.removeEventListener('touchstart', handleFirstInteraction);
-            window.removeEventListener('click', handleFirstInteraction);
+            window.removeEventListener('touchend', handleUserGesture);
+            window.removeEventListener('click', handleUserGesture);
         };
 
     }, []);
 
     return (
-        <video
-            ref={videoRef}
-            className={className}
-            autoPlay
-            muted
-            loop
-            playsInline
-        >
-            {sources.map((source) => (
-                <source
-                    key={source.src}
-                    src={source.src}
-                    type={source.type}
+        <>
+            <video
+                ref={videoRef}
+                className={className ? `background-video ${className}` : 'background-video'}
+                autoPlay
+                muted
+                loop
+                playsInline
+                onPlaying={() => setAutoplayBlocked(false)}
+                style={autoplayBlocked ? { visibility: 'hidden' } : undefined}
+            >
+                {sources.map((source) => (
+                    <source
+                        key={source.src}
+                        src={source.src}
+                        type={source.type}
+                    />
+                ))}
+            </video>
+
+            {autoplayBlocked && poster && (
+                <img
+                    src={poster}
+                    alt=""
+                    aria-hidden="true"
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        pointerEvents: 'none',
+                    }}
                 />
-            ))}
-        </video>
+            )}
+        </>
     );
 }

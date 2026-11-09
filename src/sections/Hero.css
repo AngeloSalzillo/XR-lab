@@ -64,3 +64,22 @@ header {
     color: white;
     z-index: 1;
 }
+
+.mobile-background {
+    display: none !important;
+}
+
+.desktop-background {
+    display: block !important;
+}
+
+@media (max-width: 768px) {
+
+    .mobile-background {
+        display: block !important;
+    }
+
+    .desktop-background {
+        display: none !important;
+    }
+}
