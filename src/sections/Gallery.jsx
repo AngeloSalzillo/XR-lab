@@ -33,12 +33,10 @@ const MOBILE_ALLOW =
 const DESKTOP_ANIMATIONS = [
     { id: 'Zj6z9X_MWAk', title: 'Animation video 1' },
     { id: 'LDGk5J2uM3E', title: 'Animation video 2' },
+    { id: 'CrTLA5pQ1Pc', title: 'Animation video 3' },
     { id: 'Zj6z9X_MWAk', title: 'Animation video 1' },
     { id: 'LDGk5J2uM3E', title: 'Animation video 2' },
-    { id: 'Zj6z9X_MWAk', title: 'Animation video 1' },
-    { id: 'LDGk5J2uM3E', title: 'Animation video 2' },
-    { id: 'Zj6z9X_MWAk', title: 'Animation video 1' },
-    { id: 'LDGk5J2uM3E', title: 'Animation video 2' },
+    { id: 'CrTLA5pQ1Pc', title: 'Animation video 3' }
 ];
 
 const MOBILE_ANIMATIONS = [

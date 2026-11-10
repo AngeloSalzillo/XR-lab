@@ -1,19 +1,44 @@
 import './ScrollRevealText.css';
 import { useEffect, useRef, useState } from 'react';
 
-const SCROLL_THRESHOLD = 600;       // wheel distance for EACH stage (desktop)
-const TOUCH_SCROLL_THRESHOLD = 120; // finger travel (px) for EACH stage (mobile)
-const COOLDOWN_MS = 400;            // ignores inertia after each stage (0 = off)
+// ------------------------------------------------------------
+// TRIGGER
+// ------------------------------------------------------------
+// The user scrolls normally. The moment the top of the section gets above
+// this fraction of the screen height (measured from the top of the screen),
+// the page is brought automatically to the section, without waiting for
+// the user to stop scrolling.
+//   0.5 = the section's top edge reaches the middle of the screen
+//   1.0 = as soon as the section's top edge enters at the bottom
+//   0.0 = only when the section already fills the screen
+const TRIGGER_VIEWPORT_RATIO = 0.6;
+
+// ------------------------------------------------------------
+// TIMING (milliseconds)
+// ------------------------------------------------------------
+const FIRST_LINE_DELAY_MS = 800;  // pause between arriving at the section and the first line
+const LINE_INTERVAL_MS = 1400;    // pause between one line and the next
+const END_DELAY_MS = 0;           // pause after the last line, before the page is released
+
+// Safety limits for the automatic scroll
+const AUTO_SCROLL_STALL_MS = 300;     // scroll stopped moving for this long = it was interrupted
+const AUTO_SCROLL_MAX_MS = 500;       // native smooth scroll gets at most this long
+const FALLBACK_SCROLL_MS = 300;       // if it was interrupted, finish the trip manually in this time
+
+const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
 
 export default function ScrollRevealText({ lines }) {
     const sectionRef = useRef(null);
 
-    const phaseRef = useRef('idle');   // 'idle' | 'locked' | 'done'
+    // 'idle'      : normal free scrolling, waiting to reach the trigger point
+    // 'scrolling' : automatic scroll to the section
+    // 'locked'    : page held still while the lines appear
+    // 'done'      : animation finished, free scrolling
+    const phaseRef = useRef('idle');
+
     const lockYRef = useRef(0);
-    const accumulatorRef = useRef(0);
-    const visibleRef = useRef(0);
-    const cooldownUntilRef = useRef(0);
-    const touchLastYRef = useRef(null);
+    const timersRef = useRef([]);
+    const frameRef = useRef(null);
 
     const [visibleLines, setVisibleLines] = useState(0);
 
@@ -21,14 +46,21 @@ export default function ScrollRevealText({ lines }) {
         const total = lines.length;
         const root = document.documentElement;
 
-        const setVisible = (n) => {
-            visibleRef.current = n;
-            setVisibleLines(n);
+        const clearTimers = () => {
+            timersRef.current.forEach(clearTimeout);
+            timersRef.current = [];
         };
 
-        // While locked, tell the browser it must not scroll or pan the page
-        // with touch gestures (this is what makes the lock reliable on iOS
-        // Safari and Android Chrome). We still receive the touch events.
+        const cancelWatcher = () => {
+            if (frameRef.current !== null) {
+                cancelAnimationFrame(frameRef.current);
+                frameRef.current = null;
+            }
+        };
+
+        // While the page is automatically scrolling or locked, tell the
+        // browser it must not scroll or pan with touch gestures (this is
+        // what makes the lock reliable on iOS Safari and Android Chrome).
         const setTouchLock = (locked) => {
             root.style.touchAction = locked ? 'none' : '';
         };
@@ -40,137 +72,170 @@ export default function ScrollRevealText({ lines }) {
         const jumpTo = (y) =>
             window.scrollTo({ top: y, left: 0, behavior: 'instant' });
 
-        const lock = (y) => {
-            phaseRef.current = 'locked';
-            lockYRef.current = y;
-            accumulatorRef.current = 0;
-            touchLastYRef.current = null;
-            cooldownUntilRef.current = performance.now() + COOLDOWN_MS;
-            setTouchLock(true);
-            jumpTo(y);
+        // Is the section's top edge at or above the trigger point?
+        const isPastTrigger = () =>
+            sectionRef.current.getBoundingClientRect().top <=
+            window.innerHeight * TRIGGER_VIEWPORT_RATIO;
+
+        // Reveals the lines one by one on a timer, then releases the page.
+        const startSequence = () => {
+            clearTimers();
+
+            for (let i = 0; i < total; i++) {
+                const id = setTimeout(() => {
+                    setVisibleLines(i + 1);
+                }, FIRST_LINE_DELAY_MS + i * LINE_INTERVAL_MS);
+
+                timersRef.current.push(id);
+            }
+
+            const releaseId = setTimeout(() => {
+                phaseRef.current = 'done';
+                setTouchLock(false);
+            }, FIRST_LINE_DELAY_MS + (total - 1) * LINE_INTERVAL_MS + END_DELAY_MS);
+
+            timersRef.current.push(releaseId);
         };
 
-        // Firefox can report lines/pages instead of pixels
-        const getDelta = (e) => {
-            if (e.deltaMode === 1) return e.deltaY * 16;
-            if (e.deltaMode === 2) return e.deltaY * window.innerHeight;
-            return e.deltaY;
+        const lock = (y) => {
+            cancelWatcher();
+            phaseRef.current = 'locked';
+            lockYRef.current = y;
+            setTouchLock(true);
+            jumpTo(y);
+            startSequence();
+        };
+
+        // Finishes the trip to the section by moving the page ourselves,
+        // frame by frame. Used when the native smooth scroll was
+        // interrupted (the user's finger or the inertia of their swipe
+        // can cancel it). Being immune to that, this always arrives.
+        const finishManually = (fromY, toY) => {
+            cancelWatcher();
+
+            const dist = toY - fromY;
+
+            if (dist <= 1) {
+                lock(toY);
+                return;
+            }
+
+            const t0 = performance.now();
+
+            const step = (now) => {
+                const progress = Math.min((now - t0) / FALLBACK_SCROLL_MS, 1);
+
+                jumpTo(fromY + dist * easeOutCubic(progress));
+
+                if (progress < 1) {
+                    frameRef.current = requestAnimationFrame(step);
+                } else {
+                    frameRef.current = null;
+                    lock(toY);
+                }
+            };
+
+            frameRef.current = requestAnimationFrame(step);
+        };
+
+        // Goes to the section as soon as it is called. It first tries the
+        // browser's NATIVE smooth scrolling (off the main thread, so it
+        // stays fluid on a heavy page). If that gets interrupted or takes
+        // too long, it finishes the trip manually. Once there, it locks
+        // the page and starts the sequence.
+        const startAutoScroll = () => {
+            const targetY = getActivationY();
+            const startY = window.scrollY;
+
+            // Already there (or past it): just lock
+            if (targetY - startY <= 1) {
+                lock(targetY);
+                return;
+            }
+
+            phaseRef.current = 'scrolling';
+            setTouchLock(true);
+
+            window.scrollTo({ top: targetY, left: 0, behavior: 'smooth' });
+
+            const startTime = performance.now();
+            let lastY = startY;
+            let lastMoveTime = startTime;
+
+            const watch = (now) => {
+                const y = window.scrollY;
+
+                // Arrived (or momentum carried the page past it)
+                if (y >= targetY - 1) {
+                    lock(targetY);
+                    return;
+                }
+
+                if (y !== lastY) {
+                    lastY = y;
+                    lastMoveTime = now;
+                }
+
+                const stalled = now - lastMoveTime > AUTO_SCROLL_STALL_MS;
+                const timedOut = now - startTime > AUTO_SCROLL_MAX_MS;
+
+                // Interrupted or too slow: finish it ourselves
+                if (stalled || timedOut) {
+                    finishManually(y, targetY);
+                    return;
+                }
+
+                frameRef.current = requestAnimationFrame(watch);
+            };
+
+            frameRef.current = requestAnimationFrame(watch);
         };
 
         // Page loaded already past the section: show everything, never lock
         if (sectionRef.current && window.scrollY > getActivationY() + 1) {
             phaseRef.current = 'done';
-            setVisible(total);
+            setVisibleLines(total);
         }
 
-        // Shared by wheel and touch: while locked, a positive delta means
-        // "scroll down" and drives the reveal.
-        const applyLockedDelta = (delta, threshold) => {
-            if (performance.now() < cooldownUntilRef.current) return;
-
-            // Reset the accumulator when the direction changes
-            if (Math.sign(delta) !== Math.sign(accumulatorRef.current)) {
-                accumulatorRef.current = 0;
-            }
-            accumulatorRef.current += delta;
-
-            // Scrolling down: reveal the next line; after the last one, one more
-            // step releases the page for good
-            if (accumulatorRef.current >= threshold) {
-                accumulatorRef.current = 0;
-                cooldownUntilRef.current = performance.now() + COOLDOWN_MS;
-
-                if (visibleRef.current >= total) {
-                    phaseRef.current = 'done';
-                    setTouchLock(false);
-                } else {
-                    setVisible(visibleRef.current + 1);
-                }
-            }
-            // Scrolling up: lines never disappear, it just lets you leave upwards
-            else if (accumulatorRef.current <= -threshold) {
-                accumulatorRef.current = 0;
-                phaseRef.current = 'idle';
-                setTouchLock(false);
-            }
-        };
-
         /* ====================== WHEEL (desktop) ====================== */
+        // Only used to keep the page still during the automatic scroll
+        // and while the lines appear. Before that, scrolling is free.
 
         function handleWheel(event) {
-            if (!sectionRef.current) return;
-
             const phase = phaseRef.current;
-            if (phase === 'done') return; // animation already played: free scrolling
 
-            const delta = getDelta(event);
-
-            /* ---------- IDLE: normal scrolling until the section fills the screen ---------- */
-            if (phase === 'idle') {
-                if (delta <= 0) return;
-
-                const activationY = getActivationY();
-                const y = window.scrollY;
-
-                if (y <= activationY && y + delta >= activationY) {
-                    event.preventDefault();
-                    lock(activationY);
-                }
-                return;
+            if (phase === 'scrolling' || phase === 'locked') {
+                event.preventDefault();
             }
-
-            /* ---------- LOCKED: wheel drives the reveal ---------- */
-            event.preventDefault();
-            applyLockedDelta(delta, SCROLL_THRESHOLD);
         }
 
         /* ====================== TOUCH (mobile) ====================== */
 
-        function handleTouchStart(event) {
-            if (phaseRef.current !== 'locked') return;
-
-            touchLastYRef.current = event.touches[0].clientY;
-            accumulatorRef.current = 0; // each swipe starts fresh
-        }
-
         function handleTouchMove(event) {
-            if (!sectionRef.current) return;
-            if (phaseRef.current !== 'locked') return;
+            const phase = phaseRef.current;
 
-            // Stop the browser from scrolling the page while locked.
-            // (Not cancelable if the browser already started scrolling in
-            // this same gesture; handleScroll pins the page in that case.)
-            if (event.cancelable) {
+            // Not cancelable if the browser already started scrolling in
+            // this same gesture; the scroll handler and the automatic
+            // scroll keep control of the page in that case.
+            if (
+                (phase === 'scrolling' || phase === 'locked') &&
+                event.cancelable
+            ) {
                 event.preventDefault();
             }
-
-            const currentY = event.touches[0].clientY;
-
-            if (touchLastYRef.current === null) {
-                touchLastYRef.current = currentY;
-                return;
-            }
-
-            // Finger moving UP = scrolling DOWN = positive delta
-            const delta = touchLastYRef.current - currentY;
-            touchLastYRef.current = currentY;
-
-            applyLockedDelta(delta, TOUCH_SCROLL_THRESHOLD);
         }
 
-        function handleTouchEnd() {
-            touchLastYRef.current = null;
-        }
-
-        /* ====================== SCROLL (safety net) ====================== */
-        // Scrollbar drag, keyboard, touch momentum...
+        /* ====================== SCROLL ====================== */
 
         function handleScroll() {
             if (!sectionRef.current) return;
 
             const phase = phaseRef.current;
-            if (phase === 'done') return;
 
+            // Our own automatic scroll is moving the page: nothing to do
+            if (phase === 'done' || phase === 'scrolling') return;
+
+            // Locked: pin the page (scrollbar drag, keyboard, momentum...)
             if (phase === 'locked') {
                 if (Math.abs(window.scrollY - lockYRef.current) > 1) {
                     jumpTo(lockYRef.current);
@@ -178,27 +243,22 @@ export default function ScrollRevealText({ lines }) {
                 return;
             }
 
-            // idle: if we went past the activation point, pull back and lock
-            const activationY = getActivationY();
-            if (window.scrollY > activationY) {
-                lock(activationY);
+            // Idle: the moment the trigger point is passed, go to the section
+            if (isPastTrigger()) {
+                startAutoScroll();
             }
         }
 
         window.addEventListener('wheel', handleWheel, { passive: false });
-        window.addEventListener('touchstart', handleTouchStart, { passive: true });
         window.addEventListener('touchmove', handleTouchMove, { passive: false });
-        window.addEventListener('touchend', handleTouchEnd, { passive: true });
-        window.addEventListener('touchcancel', handleTouchEnd, { passive: true });
         window.addEventListener('scroll', handleScroll, { passive: true });
 
         return () => {
             window.removeEventListener('wheel', handleWheel);
-            window.removeEventListener('touchstart', handleTouchStart);
             window.removeEventListener('touchmove', handleTouchMove);
-            window.removeEventListener('touchend', handleTouchEnd);
-            window.removeEventListener('touchcancel', handleTouchEnd);
             window.removeEventListener('scroll', handleScroll);
+            cancelWatcher();
+            clearTimers();
             setTouchLock(false);
         };
     }, [lines.length]);
