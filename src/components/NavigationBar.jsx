@@ -1,6 +1,18 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 
+// By default the navbar scrolls so that the TOP of a section reaches the
+// top of the screen. Some sections need something different. Here, the
+// About section has a large padding above and below its content, so
+// aligning its top would leave the text far below the top of the screen.
+// Instead we center the content element on the screen.
+//
+//   target: id of the element to bring into view
+//   block : 'start' (top of the screen) or 'center' (middle of the screen)
+const SECTION_SCROLL_OPTIONS = {
+    about: { target: 'about-content', block: 'center' },
+};
+
 export default function NavigationBar({type}) {
 
     const navigate = useNavigate();
@@ -26,11 +38,17 @@ export default function NavigationBar({type}) {
             return;
         }
 
+        const options = SECTION_SCROLL_OPTIONS[sectionId] ?? {
+            target: sectionId,
+            block: 'start',
+        };
+
         // Wait until the homepage has rendered
         requestAnimationFrame(() => {
 
-            document.getElementById(sectionId)?.scrollIntoView({
-                behavior: 'smooth'
+            document.getElementById(options.target)?.scrollIntoView({
+                behavior: 'smooth',
+                block: options.block,
             });
 
         });
@@ -52,7 +70,7 @@ export default function NavigationBar({type}) {
                 Gallery
             </Link>
 
-            <button onClick={() => goToSection('contacts')}>
+            <button onClick={() => goToSection('footer')}>
                 Contacts
             </button>
 
