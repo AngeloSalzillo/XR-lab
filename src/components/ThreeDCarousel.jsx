@@ -34,6 +34,23 @@ const ROTATION_SMOOTHING = 0.08;
 
 
 // ============================================================
+// SWIPE SETTINGS (MOBILE ONLY)
+// ============================================================
+// A swipe left/right goes to the next/previous card.
+//
+// Touches that start on a YouTube iframe are received by YouTube, not by
+// this page, so a swipe that begins right on the video can't be detected.
+// To still allow swiping on the cards, each card gets two invisible
+// "swipe strips" along its left and right edges. The middle of the card
+// and the bottom of it (where YouTube's play button and its controls,
+// including the fullscreen button, are) stay free for YouTube.
+
+const SWIPE_MIN_PX = 20;                // horizontal distance that counts as a swipe
+const SWIPE_STRIP_WIDTH_PERCENT = 22;   // width of each side strip, % of the card
+const SWIPE_STRIP_HEIGHT_PERCENT = 80;  // height of each strip, % of the card (from the top)
+
+
+// ============================================================
 // INDIVIDUAL CARD
 // ============================================================
 
@@ -44,7 +61,19 @@ const Card = React.memo(function Card({
     cardH,
     index,
     onCenter,
+    showSwipeStrips,
 }) {
+
+    const stripStyle = {
+        position: 'absolute',
+        top: 0,
+        width: `${SWIPE_STRIP_WIDTH_PERCENT}%`,
+        height: `${SWIPE_STRIP_HEIGHT_PERCENT}%`,
+        zIndex: 5,
+        background: 'transparent',
+        touchAction: 'pan-y',
+    };
+
     return (
         <div
             data-carousel-card-index={index}
@@ -73,6 +102,16 @@ const Card = React.memo(function Card({
                 }}
             >
                 {children}
+
+                {/* SWIPE STRIPS (mobile only): receive swipes that start
+                    on the edges of the card, above the iframe. */}
+
+                {showSwipeStrips && (
+                    <>
+                        <div style={{ ...stripStyle, left: 0 }} />
+                        <div style={{ ...stripStyle, right: 0 }} />
+                    </>
+                )}
             </div>
         </div>
     );
@@ -108,11 +147,22 @@ export default function ThreeDCarousel({
     // Each carousel manages its own YouTube players.
     const youtubePlayersRef = useRef([]);
 
+    // Maps a card index to its YouTube player.
+    const playersByCardRef = useRef({});
+
     const playingPlayerRef = useRef(null);
     const centeringCardIndexRef = useRef(null);
 
     const rotationRef = useRef(0);
     const targetRotationRef = useRef(null);
+
+    // Swipe tracking (mobile only)
+    const swipeRef = useRef({
+        startX: 0,
+        startY: 0,
+        active: false,
+        handled: false,
+    });
 
 
     // --------------------------------------------------------
@@ -399,13 +449,39 @@ export default function ThreeDCarousel({
         const newTarget =
             desiredRotation + nearestFullRotation;
 
-        if (playingPlayerRef.current !== null) {
+        const clickedPlayer = playersByCardRef.current[index];
+
+        const clickedIsPlaying =
+            Boolean(clickedPlayer) &&
+            clickedPlayer === playingPlayerRef.current;
+
+        // Pause whatever is playing, unless it is the card that was clicked.
+        if (playingPlayerRef.current !== null && !clickedIsPlaying) {
             pausePlayer(playingPlayerRef.current);
         }
 
         centeringCardIndexRef.current = index;
 
         targetRotationRef.current = newTarget;
+
+        // Start the clicked card's video. This runs inside the click
+        // handler, so the browser treats it as a user-initiated play.
+        if (clickedPlayer && !clickedIsPlaying) {
+
+            try {
+
+                if (typeof clickedPlayer.playVideo === 'function') {
+                    clickedPlayer.playVideo();
+                }
+
+            } catch (error) {
+
+                console.warn(
+                    'Unable to start YouTube player:',
+                    error
+                );
+            }
+        }
 
     }, [
         cardCount,
@@ -505,6 +581,71 @@ export default function ThreeDCarousel({
 
 
     // --------------------------------------------------------
+    // SWIPE LEFT / RIGHT (MOBILE ONLY)
+    // --------------------------------------------------------
+    // Swipe LEFT  -> next card (same as the right arrow).
+    // Swipe RIGHT -> previous card (same as the left arrow).
+    // One swipe moves exactly one card.
+
+    const handleSwipeStart = useCallback((event) => {
+
+        if (!isMobileRef.current || event.touches.length !== 1) {
+            swipeRef.current.active = false;
+            return;
+        }
+
+        const touch = event.touches[0];
+
+        swipeRef.current = {
+            startX: touch.clientX,
+            startY: touch.clientY,
+            active: true,
+            handled: false,
+        };
+
+    }, []);
+
+
+    const handleSwipeMove = useCallback((event) => {
+
+        const swipe = swipeRef.current;
+
+        if (!swipe.active || swipe.handled || event.touches.length !== 1) {
+            return;
+        }
+
+        const touch = event.touches[0];
+
+        const deltaX = touch.clientX - swipe.startX;
+        const deltaY = touch.clientY - swipe.startY;
+
+        // Mostly vertical: it's a page scroll, not a swipe.
+        if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 10) {
+            swipe.active = false;
+            return;
+        }
+
+        if (Math.abs(deltaX) < SWIPE_MIN_PX) {
+            return;
+        }
+
+        swipe.handled = true;
+
+        if (deltaX < 0) {
+            handleRightClick();   // swipe left -> next card
+        } else {
+            handleLeftClick();    // swipe right -> previous card
+        }
+
+    }, [handleLeftClick, handleRightClick]);
+
+
+    const handleSwipeEnd = useCallback(() => {
+        swipeRef.current.active = false;
+    }, []);
+
+
+    // --------------------------------------------------------
     // YOUTUBE IFRAME API
     // --------------------------------------------------------
 
@@ -591,6 +732,11 @@ export default function ThreeDCarousel({
                                         youtubePlayersRef.current.push(
                                             event.target
                                         );
+                                    }
+
+                                    if (cardIndex >= 0) {
+                                        playersByCardRef.current[cardIndex] =
+                                            event.target;
                                     }
                                 },
 
@@ -750,6 +896,8 @@ export default function ThreeDCarousel({
 
             youtubePlayersRef.current = [];
 
+            playersByCardRef.current = {};
+
             playingPlayerRef.current = null;
 
             centeringCardIndexRef.current = null;
@@ -832,7 +980,7 @@ export default function ThreeDCarousel({
 
                 // AUTOSPIN: DESKTOP ONLY.
                 // On mobile the carousel stays still until the arrow
-                // buttons (or a card click / video play) move it.
+                // buttons, a swipe, a card click or a video play move it.
 
                 if (!isMobileRef.current) {
                     rotationRef.current += AUTOSPIN_SPEED;
@@ -871,6 +1019,10 @@ export default function ThreeDCarousel({
         <div
             id={id}
             ref={parentRef}
+            onTouchStart={handleSwipeStart}
+            onTouchMove={handleSwipeMove}
+            onTouchEnd={handleSwipeEnd}
+            onTouchCancel={handleSwipeEnd}
             style={{
                 position: 'relative',
                 width: '100%',
@@ -1003,6 +1155,7 @@ export default function ThreeDCarousel({
                             cardW={effectiveCardW}
                             cardH={effectiveCardH}
                             onCenter={handleCardClick}
+                            showSwipeStrips={isMobile}
                         >
                             {card.item}
                         </Card>

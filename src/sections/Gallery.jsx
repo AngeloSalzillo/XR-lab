@@ -28,7 +28,7 @@ const DESKTOP_ALLOW =
     'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
 
 const MOBILE_ALLOW =
-    'accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+    'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
 
 const DESKTOP_ANIMATIONS = [
     { id: 'Zj6z9X_MWAk', title: 'Animation video 1' },
@@ -352,29 +352,27 @@ export default function Gallery() {
 
                         <div id="environments-iframe-container" className="mobile-only">
                             <iframe 
-                                width="412" 
-                                height="732" 
                                 src="https://www.youtube.com/embed/elm-OhkaQXU"
                                 title="Environments1 vertical" 
                                 frameBorder="0" 
                                 allow={MOBILE_ALLOW}
                                 referrerPolicy="strict-origin-when-cross-origin" 
                                 allowFullScreen
+                                style={IFRAME_STYLE}
                             ></iframe>
                         </div>
 
                     ) : (
 
                         <div id="environments-iframe-container" className="desktop-only">
-                            <iframe 
-                                width="1053" 
-                                height="592" 
+                            <iframe
                                 src="https://www.youtube.com/embed/EFEiAuZ2IkU" 
                                 title="Environments1" 
                                 frameBorder="0" 
                                 allow={DESKTOP_ALLOW}
                                 referrerPolicy="strict-origin-when-cross-origin" 
                                 allowFullScreen
+                                style={IFRAME_STYLE}
                             ></iframe>
                         </div>
 
