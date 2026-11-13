@@ -4,11 +4,19 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content:space-between;
+    justify-content: center;
     gap: 3rem;
     padding-top: 12rem;
     padding-bottom: 2rem;
     background-color: black;
+}
+
+#socials-and-text-container {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 #socials-container {
@@ -19,9 +27,20 @@
     gap: 30px;
 }
 
+#info-container {
+
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
 #contact-info-container {
 
-    padding-left: 2rem;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .contact-info {
@@ -34,27 +53,35 @@
 
 .contact-info p{
 
-    font-size: 1.1rem;
+    font-size: clamp(1.1rem, 1.5vw, 2.5rem);
 }
 
 .contacts-icon {
 
-    width: 20px;
-    height: 20px;
+    width: clamp(20px, 1.5vw, 40px);
+    height: clamp(20px, 1.5vw, 40px);
     object-fit: contain;
 }
 
 .social-icon {
 
-    width: 30px;
-    height: 30px;
+    width: clamp(30px, 2.5vw, 60px);
+    height: clamp(30px, 2.5vw, 60px);
     object-fit: contain;
     color: silver;
+    transition: transform 0.2s ease, color 0.2s ease;
+
+}
+
+.social-icon:hover {
+
+    transform: scale(1.1);
+    color: white;
 }
 
 .footer-text {
 
-    font-size: 1.25rem;
+    font-size: clamp(1.25rem, 1.5vw, 2.5rem);
 }
 
 #navbar-container p {
@@ -77,13 +104,5 @@
 
     #footer {
         flex-direction: column;
-    }
-
-    #contact-info-container {
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
     }
 }

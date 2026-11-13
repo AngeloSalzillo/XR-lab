@@ -15,38 +15,50 @@ export default function Contacts() {
     return (
 
         <div id="footer">
-            <div id="contact-info-container">
-                <p className="smooch-sans-thin footer-text"> Have a project, collaboration or idea? </p>
+            <div id="info-container">
+                <div id="socials-and-text-container">
+                    <p className="smooch-sans-thin footer-text"> Have a project, collaboration or idea? </p>
 
-                <div className="contact-info">
-                    <img className="contacts-icon" src={mailIcon}/>
-                    <p className="smooch-sans-thin"> a.salzillo.pro@gmail.com </p>
+                    <div id="socials-container">
+                        <a href="https://www.linkedin.com/in/angelo-salzillo-12186124a/">
+                            <img className="social-icon" src={linkedinIcon}/>
+                        </a>
+                        <a href="https://github.com/AngeloSalzillo">
+                            <img className="social-icon" src={githubIcon}/>
+                        </a>
+                        <a href="https://sketchfab.com/Angelo-Salzillo">
+                            <img className="social-icon" src={sketchfabIcon}/>
+                        </a>
+                    </div>
                 </div>
-                <div className="contact-info">
-                    <img className="contacts-icon" src={phoneIcon}/>
-                    <p className="smooch-sans-thin"> +34 687 328 326 </p>
-                </div>
-                <div className="contact-info">
-                    <img className="contacts-icon" src={whatsappIcon}/>
-                    <p className="smooch-sans-thin"> +39 389 237 8918 </p>
-                </div>
-                 <div className="contact-info">
-                    <img className="contacts-icon" src={locationIcon}/>
-                    <p className="smooch-sans-thin"> Barcelona, Spain </p>
+
+                <div id="contact-info-container">
+                    <div className="contact-info">
+                        <img className="contacts-icon" src={mailIcon}/>
+                        <p className="smooch-sans-thin"> a.salzillo.pro@gmail.com </p>
+                    </div>
+                    <div className="contact-info">
+                        <img className="contacts-icon" src={phoneIcon}/>
+                        <p className="smooch-sans-thin"> +34 687 328 326 </p>
+                    </div>
+                    <div className="contact-info">
+                        <img className="contacts-icon" src={whatsappIcon}/>
+                        <p className="smooch-sans-thin"> +39 389 237 8918 </p>
+                    </div>
+                    <div className="contact-info">
+                        <img className="contacts-icon" src={locationIcon}/>
+                        <p className="smooch-sans-thin"> Barcelona, Spain </p>
+                    </div>
                 </div>
             </div>
 
-            <div id="socials-container">
-                <img className="social-icon" src={linkedinIcon}/>
-                <img className="social-icon" src={githubIcon}/>
-                <img className="social-icon" src={sketchfabIcon}/>
-            </div>
-
+            {/*}
             <div id="navbar-container">
                 <p className="smooch-sans-thin">NAVIGATION</p>
                 <div className="line"></div>
                 <NavigationBar type="footer-navbar"/>
             </div>
+            */}
         </div>
     )
 }

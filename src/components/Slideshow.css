@@ -34,26 +34,27 @@
 
 .slide h2 {
     
-    font-size: 2.5rem;
+    font-size: clamp(1.5rem, 4.5vw, 6rem);
+    margin: 0 0;
 }
 
 .slide p {
 
     text-align: justify;
-    line-height: 2.2rem;
-    font-size: 1.7rem;
+    line-height: clamp(1.8rem, 3.5vw, 4.5rem);
+    font-size: clamp(1.7rem, 2vw, 3rem);
 }
 
 .slide strong {
 
     text-align: justify;
-    font-size: 2rem;
+    font-size: clamp(1.7rem, 2vw, 3rem);
 }
 
 #explore-button {
 
-    width: 12rem;
-    height: 3rem;
+    width: fit-content;
+    height: fit-content;
     border-radius: 999px;
     display: flex;
     flex-direction: column;
@@ -76,10 +77,11 @@
 
 #explore-button p {
 
-    font-size: 2rem;
+    font-size: 4vw;
+    margin: 1vw 2vw;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1070px) {
 
     .slideshow-container {
 

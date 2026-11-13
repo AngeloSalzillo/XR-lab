@@ -20,7 +20,7 @@ export default function About() {
             },
 
             {
-                threshold: 0.55
+                threshold: 0.50
             }
         );
 
@@ -63,7 +63,8 @@ export default function About() {
                         of software engineering, immersive technologies
                         and digital art. Every project is driven by
                         curiosity and built around the idea that code
-                        can be used as a creative tool. XR LAB is where
+                        can be used as a creative tool.
+                        XR LAB is where
                         engineering meets creativity to transform ideas
                         into interactive experiences. </strong>
                     </p>
@@ -83,14 +84,13 @@ export default function About() {
 
                         <p className="smooch-sans-thin">
                             <strong>
-                                Transforming sound into visual experiences
+                                Transforming sound into visual
                             </strong>
-                            <br/>
                             <br/>
 
                             Real-time visual systems driven by rhythm,
                             frequency, and amplitude, turning audio into
-                            dynamic movement, light, and form. Sound becomes
+                            dynamic movement. Sound becomes
                             an interactive component of the visual experience.
                         </p>
 
@@ -105,16 +105,15 @@ export default function About() {
 
                         <p className="smooch-sans-thin">
                             <strong>
-                                Capturing and visualizing the physical world
+                                Capturing the physical world
                             </strong>
-                            <br />
-                            <br />
+                            <br/>
 
                             3D scanning techniques used to transform
                             real-world objects and environments into
                             digital spaces. LiDAR, photogrammetry,
                             and spatial data become interactive
-                            three-dimensional representations.
+                            representations.
                         </p>
 
                     </div>
@@ -131,10 +130,10 @@ export default function About() {
                                 Building immersive digital worlds
                             </strong>
                             <br />
-                            <br />
 
                             Interactive environments combining 3D assets,
-                            lighting, materials, and spatial design.
+                            lighting, materials, and spatial design to create
+                            cohesive and engaging spaces.
                         </p>
 
                     </div>
@@ -150,7 +149,6 @@ export default function About() {
                             <strong>
                                 Bringing digital experiences to life
                             </strong>
-                            <br />
                             <br />
 
                             Movement, transformation, and procedural

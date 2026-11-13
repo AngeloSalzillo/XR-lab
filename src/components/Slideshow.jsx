@@ -59,11 +59,13 @@ export default function({children, ...props}) {
                 {Children.toArray(children)[0]}
             </div>
 
+            {/*
             <Link to="/gallery" id="explore-button">
                 <p className="bytesized-regular">
                     Explore ›
                 </p>
             </Link> 
+            */}
         </div>
     )
 }

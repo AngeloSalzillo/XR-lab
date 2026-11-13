@@ -28,7 +28,7 @@
 }
 
 #home-content div h3 {
-    font-size: clamp(1rem, 2vw, 2rem);
+    font-size: clamp(1rem, 2vw, 3rem);
     letter-spacing: 0.3rem;
     margin: 10px 0;
 }
