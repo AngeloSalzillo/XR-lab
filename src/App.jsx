@@ -1,5 +1,6 @@
 import './components/NavigationBar.css';
 import NavigationBar from './components/NavigationBar.jsx';
+import Preloader from './components/Preloader.jsx';
 import Hero from './sections/Hero.jsx';
 import About from './sections/About.jsx';
 import Gallery from './sections/Gallery.jsx';
@@ -16,7 +17,7 @@ import posterBackground from '../assets/about_poster.jpg';
 import posterBackground_mobile from '../assets/about_mobile_poster.jpg';
 
 import { useEffect, useState } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 
 export default function App() {
 
@@ -27,6 +28,8 @@ export default function App() {
   const [isMobile, setIsMobile] = useState(
     () => window.matchMedia('(max-width: 768px)').matches
   );
+
+  const location = useLocation();
 
   useEffect(() => {
 
@@ -43,6 +46,7 @@ export default function App() {
   return (
 
     <>
+      <Preloader key={location.pathname} />
       <NavigationBar type="navbar"/>
 
       {/* Resets the scroll position to the top on every route change.

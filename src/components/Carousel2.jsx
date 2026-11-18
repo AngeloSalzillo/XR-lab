@@ -567,7 +567,7 @@ export default function Carousel2() {
                                 alt={item.alt}
                                 onClick={() => handleImageClick(item.model)}
                             />
-                            <svg
+                            <svg className="play-icon"
                                 xmlns="http://www.w3.org/2000/svg"
                                 height="40px"
                                 viewBox="0 -960 960 960"

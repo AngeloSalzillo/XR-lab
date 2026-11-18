@@ -53,7 +53,7 @@
 
 .contact-info p{
 
-    font-size: clamp(1.1rem, 1.5vw, 2.5rem);
+    font-size: clamp(1.1rem, 1vw, 2.5rem);
 }
 
 .contacts-icon {

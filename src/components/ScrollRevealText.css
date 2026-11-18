@@ -7,7 +7,7 @@
     opacity: 0;
     color: white;
     transform: translateY(20px);
-    font-size: 2rem;
+    font-size: clamp(1.6rem, 2vw, 3rem);
     text-align: justify;
     text-align-last: justify;
     margin: 1rem 0;

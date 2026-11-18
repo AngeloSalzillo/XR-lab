@@ -101,8 +101,8 @@
 
     color: silver;
 
-    width: 3rem;
-    height: 3rem;
+    width: clamp(3rem, 5vw, 5rem);
+    height: clamp(3rem, 5vw, 5rem);
 
     cursor: pointer;
 
@@ -130,6 +130,13 @@
     transform: scale(1.2);
     color: white;
 }
+
+.play-icon {
+
+    width: clamp(3rem, 3vw, 4rem);
+    height: clamp(3rem, 3vw, 4rem);
+}
+
 
 .close-iframe-button {
 

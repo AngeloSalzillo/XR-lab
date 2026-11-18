@@ -22,8 +22,8 @@
 
 #gallery-button {
 
-    width: 14rem;
-    height: 4rem;
+    width: clamp(12rem, 15vw, 20rem);
+    height: clamp(3rem, 4vw, 5rem);
     border-radius: 999px;
     display: flex;
     align-items: center;
@@ -43,7 +43,7 @@
 
 #gallery-button p {
 
-    font-size: 3rem;
+    font-size: clamp(2rem, 3vw, 4rem);
 }
 
 #button-container {
